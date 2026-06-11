@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Copy & Paste</title>
-    <!-- Import a clean, modern font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         /* --- Base & Reset --- */
@@ -26,6 +25,44 @@
             align-items: center;
             min-height: 100vh;
             color: #f8fafc;
+        }
+
+        /* --- Login Overlay --- */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #login-overlay input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            width: 250px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        #login-overlay button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
         }
 
         /* --- Glassmorphism Card --- */
@@ -164,6 +201,12 @@
 </head>
 <body>
 
+    <div id="login-overlay">
+        <h2 style="color:white; margin-bottom: 10px;">Enter Password</h2>
+        <input type="password" id="passInput" placeholder="Password...">
+        <button onclick="checkPassword()">Unlock</button>
+    </div>
+
     <div class="card">
         <h1>Share Your Text</h1>
         <p>Type or paste your text below, then click copy.</p>
@@ -174,7 +217,6 @@
         </div>
 
         <button class="copy-btn" id="copyBtn" onclick="copyText()">
-            <!-- Copy Icon -->
             <svg id="btnIcon" viewBox="0 0 24 24">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -183,7 +225,6 @@
         </button>
     </div>
 
-    <!-- Success Notification -->
     <div class="toast" id="toast">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
@@ -192,30 +233,42 @@
     </div>
 
     <script>
+        // Password Check Logic
+        function checkPassword() {
+            const pass = document.getElementById("passInput").value;
+            if (pass === "Greenshark!0") {
+                document.getElementById("login-overlay").style.display = "none";
+            } else {
+                alert("Incorrect Password!");
+            }
+        }
+
+        // Allow pressing "Enter" key
+        document.getElementById("passInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
+
         async function copyText() {
             const textArea = document.getElementById("textToCopy");
             const btnText = document.getElementById("btnText");
             const btnIcon = document.getElementById("btnIcon");
             const toast = document.getElementById("toast");
 
-            // Check if there is text to copy
             if (!textArea.value.trim()) {
                 textArea.focus();
                 return;
             }
 
             try {
-                // Modern Async Clipboard API
                 await navigator.clipboard.writeText(textArea.value);
                 
-                // Change Button State
                 btnText.innerText = "Copied!";
-                btnIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>'; // Checkmark icon
+                btnIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>'; 
                 
-                // Show Toast Notification
                 toast.classList.add("show");
 
-                // Reset back to normal after 2.5 seconds
                 setTimeout(() => {
                     btnText.innerText = "Copy to Clipboard";
                     btnIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
